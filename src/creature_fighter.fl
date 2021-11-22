@@ -8,7 +8,7 @@ class UserInterface {open
   } {
     Fl_Window win {
       label {Creature Fighter} open
-      xywh {836 123 555 545} type Double resizable visible
+      xywh {582 108 555 545} type Double resizable visible
     } {
       Fl_Group bg {open
         xywh {0 0 555 355} box FLAT_BOX color 223 resizable
@@ -32,8 +32,8 @@ class UserInterface {open
       Fl_Group msg {open
         xywh {0 355 555 195} box GTK_UP_BOX color 93
       } {
-        Fl_Group special_moves {
-          xywh {0 355 385 192} box GTK_UP_BOX color 92 selection_color 92 labelcolor 63 hide
+        Fl_Group special_moves {open
+          xywh {0 355 315 192} box GTK_UP_BOX color 92 selection_color 92 labelcolor 63
         } {
           Fl_Group move0 {open
             xywh {10 362 275 40} box FLAT_BOX color 175
@@ -79,33 +79,29 @@ class UserInterface {open
               xywh {170 505 110 30} box GLEAM_ROUND_DOWN_BOX color 96 selection_color 178 labelcolor 3
             }
           }
-          Fl_Button attack {
-            label {@redo}
-            xywh {295 365 80 170} box GLEAM_DOWN_BOX down_box GLEAM_UP_BOX color 88 selection_color 64 labelsize 55 labelcolor 56
-          }
         }
         Fl_Button continue_button {
           label {@>}
           xywh {510 495 40 40} box GLEAM_DOWN_BOX down_box GLEAM_UP_BOX color 79 labelsize 30 labelcolor 56
         }
         Fl_Group battle_menu {
-          xywh {385 355 170 195} box GTK_UP_BOX color 92 labelcolor 56
+          xywh {315 355 240 195} box GTK_UP_BOX color 92 labelcolor 56
         } {
           Fl_Button fight {
-            label Fight
-            xywh {435 360 80 40} box GLEAM_DOWN_BOX down_box GLEAM_UP_BOX color 154 selection_color 80 labelfont 1 labelcolor 56
+            label Fight selected
+            xywh {397 360 80 40} box GLEAM_DOWN_BOX down_box GLEAM_UP_BOX color 154 selection_color 80 labelfont 1 labelcolor 56
           }
           Fl_Button run {
-            label RUN
-            xywh {435 408 80 40} box GLEAM_DOWN_BOX down_box GLEAM_UP_BOX color 154 selection_color 95 labelfont 1 labelcolor 56
+            label RUN selected
+            xywh {397 408 80 40} box GLEAM_DOWN_BOX down_box GLEAM_UP_BOX color 154 selection_color 95 labelfont 1 labelcolor 56
           }
           Fl_Button switch {
-            label Switch
-            xywh {435 456 80 40} box GLEAM_DOWN_BOX down_box GLEAM_UP_BOX color 154 selection_color 63 labelfont 1 labelcolor 56
+            label Switch selected
+            xywh {397 456 80 40} box GLEAM_DOWN_BOX down_box GLEAM_UP_BOX color 154 selection_color 63 labelfont 1 labelcolor 56
           }
           Fl_Button item {
-            label Item
-            xywh {435 505 80 40} box GLEAM_DOWN_BOX down_box GLEAM_UP_BOX color 154 selection_color 143 labelfont 1 labelcolor 56
+            label Item selected
+            xywh {397 505 80 40} box GLEAM_DOWN_BOX down_box GLEAM_UP_BOX color 154 selection_color 143 labelfont 1 labelcolor 56
           }
         }
       }
@@ -372,7 +368,7 @@ class UserInterface {open
           xywh {30 270 200 190} box GLEAM_DOWN_BOX color 79
         }
       }
-      Fl_Group math {open selected
+      Fl_Group math {open
         xywh {0 0 555 545} box GLEAM_DOWN_BOX color 77 hide
       } {
         Fl_Group {} {

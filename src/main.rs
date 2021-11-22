@@ -54,7 +54,6 @@ fn main() {
     let (send_action, receive_action) = app::channel::<Action>();
 // Math Menu
     ui.check_answer.emit(send_action, Action::Check);
-    ui.attack.emit(send_action, Action::Math);
 // Main bottom menu
     ui.fight.emit(send_action, Action::Fight);
     ui.run.emit(send_action, Action::Run);
@@ -128,29 +127,6 @@ fn main() {
         }
         if let Some(button_action) = receive_action.recv() {
             match button_action {
-                Action::Math => {
-                    if player.moves.clone().len()  > check_this {
-                        let atk_move = player.moves[check_this].clone();
-                        let mp = atk_move.mp;
-                        if mp == 0.0 {
-                            continue
-                        }
-                        ui.math.show();
-                        ui.eq0_dmg.set_value(player.get_damage(atk_move.clone(), enemy.element1));
-                        ui.eq0_atk.set_value(player.atk);
-                        ui.eq0_answer.set_value(0.0);
-                        ui.eq1_def.set_value(enemy.def);
-                        ui.eq1_hp.set_value(enemy.hp);
-                        ui.eq1_answer.set_value(0.0);
-                        let mut atk = enemy.random(1.0, enemy.atk);
-                        atk = (atk * 100.0).round() / 100.0;
-                        let mut level = enemy.random(1.0, enemy.level + 1.0);
-                        level = (level * 100.0).round() / 100.0;
-                        ui.eq2_atk.set_value(atk);
-                        ui.eq2_level.set_value(level);
-                        ui.eq2_answer.set_value(0.0);
-                    }
-                },
                 Action::Check => {
                   //TODO
                     let mut passed:bool = false;
@@ -185,7 +161,7 @@ fn main() {
                     }
                     let at = ui.eq2_atk.value();
                     let lvl = ui.eq2_level.value();
-                    let mut ans2 = at - lvl;
+                    let mut ans2 = ((at * 100.0).round() / 100.0) - ((lvl * 100.0).round() / 100.0);
                     ans2 = (ans2 * 100.0).round() / 100.0;
                     let u_ans2 = ui.eq2_answer.value();
                     println!("{} vs {}", ans2, u_ans2);
@@ -238,10 +214,102 @@ fn main() {
                   check_this = 0;
                   ui.math.hide();
                 },
-                Action::Move0 => {check_this = 0;},
-                Action::Move1 => {check_this = 1;},
-                Action::Move2 => {check_this = 2;},
-                Action::Move3 => {check_this = 3;},
+                Action::Move0 => {
+                    check_this = 0;
+                    if player.moves.clone().len()  > check_this {
+                        let atk_move = player.moves[check_this].clone();
+                        let mp = atk_move.mp;
+                        if mp == 0.0 {
+                            continue
+                        }
+                        ui.math.show();
+                        ui.eq0_dmg.set_value(player.get_damage(atk_move.clone(), enemy.element1));
+                        ui.eq0_atk.set_value(player.atk);
+                        ui.eq0_answer.set_value(0.0);
+                        ui.eq1_def.set_value(enemy.def);
+                        ui.eq1_hp.set_value(enemy.hp);
+                        ui.eq1_answer.set_value(0.0);
+                        let mut atk = enemy.random(1.0, enemy.atk);
+                        atk = (atk * 100.0).round() / 100.0;
+                        let mut level = enemy.random(1.0, enemy.level + 1.0);
+                        level = (level * 100.0).round() / 100.0;
+                        ui.eq2_atk.set_value(atk);
+                        ui.eq2_level.set_value(level);
+                        ui.eq2_answer.set_value(0.0);
+                    }
+                },
+                Action::Move1 => {
+                    check_this = 1;
+                    if player.moves.clone().len()  > check_this {
+                        let atk_move = player.moves[check_this].clone();
+                        let mp = atk_move.mp;
+                        if mp == 0.0 {
+                            continue
+                        }
+                        ui.math.show();
+                        ui.eq0_dmg.set_value(player.get_damage(atk_move.clone(), enemy.element1));
+                        ui.eq0_atk.set_value(player.atk);
+                        ui.eq0_answer.set_value(0.0);
+                        ui.eq1_def.set_value(enemy.def);
+                        ui.eq1_hp.set_value(enemy.hp);
+                        ui.eq1_answer.set_value(0.0);
+                        let mut atk = enemy.random(1.0, enemy.atk);
+                        atk = (atk * 100.0).round() / 100.0;
+                        let mut level = enemy.random(1.0, enemy.level + 1.0);
+                        level = (level * 100.0).round() / 100.0;
+                        ui.eq2_atk.set_value(atk);
+                        ui.eq2_level.set_value(level);
+                        ui.eq2_answer.set_value(0.0);
+                    }
+                },
+                Action::Move2 => {
+                    check_this = 2;
+                    if player.moves.clone().len()  > check_this {
+                        let atk_move = player.moves[check_this].clone();
+                        let mp = atk_move.mp;
+                        if mp == 0.0 {
+                            continue
+                        }
+                        ui.math.show();
+                        ui.eq0_dmg.set_value(player.get_damage(atk_move.clone(), enemy.element1));
+                        ui.eq0_atk.set_value(player.atk);
+                        ui.eq0_answer.set_value(0.0);
+                        ui.eq1_def.set_value(enemy.def);
+                        ui.eq1_hp.set_value(enemy.hp);
+                        ui.eq1_answer.set_value(0.0);
+                        let mut atk = enemy.random(1.0, enemy.atk);
+                        atk = (atk * 100.0).round() / 100.0;
+                        let mut level = enemy.random(1.0, enemy.level + 1.0);
+                        level = (level * 100.0).round() / 100.0;
+                        ui.eq2_atk.set_value(atk);
+                        ui.eq2_level.set_value(level);
+                        ui.eq2_answer.set_value(0.0);
+                    }
+                },
+                Action::Move3 => {
+                    check_this = 3;
+                    if player.moves.clone().len()  > check_this {
+                        let atk_move = player.moves[check_this].clone();
+                        let mp = atk_move.mp;
+                        if mp == 0.0 {
+                            continue
+                        }
+                        ui.math.show();
+                        ui.eq0_dmg.set_value(player.get_damage(atk_move.clone(), enemy.element1));
+                        ui.eq0_atk.set_value(player.atk);
+                        ui.eq0_answer.set_value(0.0);
+                        ui.eq1_def.set_value(enemy.def);
+                        ui.eq1_hp.set_value(enemy.hp);
+                        ui.eq1_answer.set_value(0.0);
+                        let mut atk = enemy.random(1.0, enemy.atk);
+                        atk = (atk * 100.0).round() / 100.0;
+                        let mut level = enemy.random(1.0, enemy.level + 1.0);
+                        level = (level * 100.0).round() / 100.0;
+                        ui.eq2_atk.set_value(atk);
+                        ui.eq2_level.set_value(level);
+                        ui.eq2_answer.set_value(0.0);
+                    }
+                },
                 Action::Fight => {
                     if ui.special_moves.visible() {
                         ui.special_moves.hide();
@@ -375,6 +443,7 @@ fn main() {
                         ui.enemy.set_image(get_image(enemy.clone(), View::Left));
                         ui.enemy_hp.set_maximum(enemy.hp_max);
                         ui.enemy_hp.set_value(enemy.hp);
+                        ui.enemy.set_label(enemy.name.as_str());
                 },
                 _=> {},
             }
