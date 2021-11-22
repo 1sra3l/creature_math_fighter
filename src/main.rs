@@ -112,6 +112,7 @@ fn main() {
     ui.toss_items.emit(send_action, Action::Item(ItemScreen::Items(ItemUsage::Toss)));
     ui.toss_herbs.emit(send_action, Action::Item(ItemScreen::Herbs(ItemUsage::Toss)));
     ui.toss_relics.emit(send_action, Action::Item(ItemScreen::Relics(ItemUsage::Toss)));
+    ui.sound.emit(send_action, Action::ToggleMusic);
     let mut enemy_iter = 0;
     let mut player = Creature::from_element(Element::Electric);
     let mut creatures:Vec<Creature> = vec![player.clone()];
@@ -139,13 +140,29 @@ fn main() {
     let mut elapsed:f64 = 0.0;
     let threshold:f64 = 500.0;
     let busy:bool = false;
+    let mut playing:bool = true;
     let mut check_this:usize = 0;
+    //TODO config file read opts
+/*
+music = true
+name = 
+hp = 
+hp_max = 
+hp_effort = 
+xp = 
+total_xp = 
+moves = { name="element/condition" }
+items = { item="element/condition" }
+
+*/
     ui.win.redraw();
     let song = random_song();
     let mut bg_music = Music::new(song).unwrap();
     // loop music
     bg_music.set_looping(true);
-    bg_music.play();
+    if playing {
+        bg_music.play();
+    }
     while app.wait() {
         if elapsed > threshold {
             elapsed = 0.0;
@@ -155,6 +172,14 @@ fn main() {
         }
         if let Some(button_action) = receive_action.recv() {
             match button_action {
+                Action::ToggleMusic => {
+                    playing = !playing;
+                    if playing {
+                        bg_music.play();
+                    } else {
+                        bg_music.stop();
+                    }
+                }
                 Action::Check => {
                   //TODO
                     let mut passed:bool = false;
@@ -261,10 +286,12 @@ fn main() {
                         ui.enemy_hp.set_maximum(enemy.hp_max);
                         ui.enemy_hp.set_value(enemy.hp);
                     }
-                    let song = random_song();
-                    bg_music.stop();
-                    bg_music = Music::new(song).unwrap();
-                    bg_music.play();
+                    if playing {
+                        let song = random_song();
+                        bg_music.stop();
+                        bg_music = Music::new(song).unwrap();
+                        bg_music.play();
+                    }
                     check_this = 0;
                     ui.math.hide();
                 },
@@ -277,10 +304,12 @@ fn main() {
                             continue
                         }
                         ui.math.show();
-                        let song = random_song();
-                        bg_music.stop();
-                        bg_music = Music::new(song).unwrap();
-                        bg_music.play();
+                        if playing {
+                            let song = random_song();
+                            bg_music.stop();
+                            bg_music = Music::new(song).unwrap();
+                            bg_music.play();
+                        }
                         ui.eq0_dmg.set_value(player.get_damage(atk_move.clone(), enemy.element1));
                         ui.eq0_atk.set_value(player.atk);
                         ui.eq0_answer.set_value(0.0);
@@ -307,10 +336,12 @@ fn main() {
                             continue
                         }
                         ui.math.show();
-                        let song = random_song();
-                        bg_music.stop();
-                        bg_music = Music::new(song).unwrap();
-                        bg_music.play();
+                        if playing {
+                            let song = random_song();
+                            bg_music.stop();
+                            bg_music = Music::new(song).unwrap();
+                            bg_music.play();
+                        }
                         ui.eq0_dmg.set_value(player.get_damage(atk_move.clone(), enemy.element1));
                         ui.eq0_atk.set_value(player.atk);
                         ui.eq0_answer.set_value(0.0);
@@ -337,10 +368,12 @@ fn main() {
                             continue
                         }
                         ui.math.show();
-                        let song = random_song();
-                        bg_music.stop();
-                        bg_music = Music::new(song).unwrap();
-                        bg_music.play();
+                        if playing {
+                            let song = random_song();
+                            bg_music.stop();
+                            bg_music = Music::new(song).unwrap();
+                            bg_music.play();
+                        }
                         ui.eq0_dmg.set_value(player.get_damage(atk_move.clone(), enemy.element1));
                         ui.eq0_atk.set_value(player.atk);
                         ui.eq0_answer.set_value(0.0);
@@ -367,10 +400,12 @@ fn main() {
                             continue
                         }
                         ui.math.show();
-                        let song = random_song();
-                        bg_music.stop();
-                        bg_music = Music::new(song).unwrap();
-                        bg_music.play();
+                        if playing {
+                            let song = random_song();
+                            bg_music.stop();
+                            bg_music = Music::new(song).unwrap();
+                            bg_music.play();
+                        }
                         ui.eq0_dmg.set_value(player.get_damage(atk_move.clone(), enemy.element1));
                         ui.eq0_atk.set_value(player.atk);
                         ui.eq0_answer.set_value(0.0);
@@ -404,10 +439,12 @@ fn main() {
                 Action::Item(item_screen) => {
                     match item_screen {
                         ItemScreen::Show => {
-                            let song = random_song();
-                            bg_music.stop();
-                            bg_music = Music::new(song).unwrap();
-                            bg_music.play();
+                            if playing {
+                                let song = random_song();
+                                bg_music.stop();
+                                bg_music = Music::new(song).unwrap();
+                                bg_music.play();
+                            }
                             ui.item_screen.show();
                             ui.items.clear();
                             for item in player.items.clone() {
@@ -451,10 +488,12 @@ fn main() {
                 Action::Switch(switch) => {
                     match switch {
                         SwitchScreen::Show => {
-                            let song = random_song();
-                            bg_music.stop();
-                            bg_music = Music::new(song).unwrap();
-                            bg_music.play();
+                            if playing {
+                                let song = random_song();
+                                bg_music.stop();
+                                bg_music = Music::new(song).unwrap();
+                                bg_music.play();
+                            }
                             ui.switch_screen.show();
                             let c = creatures                          [0].clone();
                             ui.choose_0.set_image(get_image(c.clone(), View::Icon));
@@ -476,20 +515,24 @@ fn main() {
                                 ui.xp_guage.set_value(player.xp);
                                 ui.player.set_image(get_image(player.clone(), View::Right));
                             }
-                            let song = random_song();
-                            bg_music.stop();
-                            bg_music = Music::new(song).unwrap();
-                            bg_music.play();
+                            if playing {
+                                let song = random_song();
+                                bg_music.stop();
+                                bg_music = Music::new(song).unwrap();
+                                bg_music.play();
+                            }
                             ui.switch_screen.hide();
                         },
                         SwitchScreen::Stats(num) => {
                             //HARDCODE TODO
                             creatures[0] = player.clone();
                             if num < creatures.len() {
-                                let song = random_song();
-                                bg_music.stop();
-                                bg_music = Music::new(song).unwrap();
-                                bg_music.play();
+                                if playing {
+                                    let song = random_song();
+                                    bg_music.stop();
+                                    bg_music = Music::new(song).unwrap();
+                                    bg_music.play();
+                                }
                                 let c = creatures[num].clone();
                                 ui.stats_screen.show();
                                 ui.hp.set_value(c.hp);
@@ -528,10 +571,12 @@ fn main() {
                             ui.switch_screen.hide();
                         },
                         SwitchScreen::HideStats => {
-                            let song = random_song();
-                            bg_music.stop();
-                            bg_music = Music::new(song).unwrap();
-                            bg_music.play();
+                            if playing {
+                                let song = random_song();
+                                bg_music.stop();
+                                bg_music = Music::new(song).unwrap();
+                                bg_music.play();
+                            }
                             let name = ui.name.value().to_string();
                             player.name = name.to_owned();
                             ui.player.set_label(name.as_str());
@@ -542,19 +587,21 @@ fn main() {
                     
                 },
                 Action::Run => {
+                    if playing { 
                         let song = random_song();
                         bg_music.stop();
                         bg_music = Music::new(song).unwrap();
                         bg_music.play();
                         enemy_iter += 1;
-                        if enemy_iter >= enemies.len() {
-                            enemy_iter = 0;
-                        }
-                        enemy = enemies[enemy_iter].clone();
-                        ui.enemy.set_image(get_image(enemy.clone(), View::Left));
-                        ui.enemy_hp.set_maximum(enemy.hp_max);
-                        ui.enemy_hp.set_value(enemy.hp);
-                        ui.enemy.set_label(enemy.name.as_str());
+                    }
+                    if enemy_iter >= enemies.len() {
+                        enemy_iter = 0;
+                    }
+                    enemy = enemies[enemy_iter].clone();
+                    ui.enemy.set_image(get_image(enemy.clone(), View::Left));
+                    ui.enemy_hp.set_maximum(enemy.hp_max);
+                    ui.enemy_hp.set_value(enemy.hp);
+                    ui.enemy.set_label(enemy.name.as_str());
                 },
                 _=> {},
             }

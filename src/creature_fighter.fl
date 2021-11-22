@@ -11,7 +11,7 @@ class UserInterface {open
       xywh {582 108 555 545} type Double resizable visible
     } {
       Fl_Group bg {open
-        xywh {0 0 555 355} box FLAT_BOX color 223 resizable
+        xywh {0 0 569 355} box FLAT_BOX color 223 resizable
       } {
         Fl_Box enemy {
           xywh {345 140 200 190} color 71 labelfont 3 labelsize 20 labelcolor 56 align 513
@@ -20,19 +20,23 @@ class UserInterface {open
           xywh {20 145 200 190} color 71 labelfont 9 labelsize 20 align 513
         }
         Fl_Progress hp_guage {
-          xywh {25 15 235 35} box GLEAM_ROUND_DOWN_BOX color 64 selection_color 88
+          xywh {4 15 235 35} box GLEAM_ROUND_DOWN_BOX color 64 selection_color 88
         }
         Fl_Progress xp_guage {
           xywh {30 60 195 20} box GLEAM_ROUND_DOWN_BOX color 47 selection_color 180
         }
-        Fl_Progress enemy_hp {
-          xywh {310 15 235 35} box GLEAM_ROUND_DOWN_BOX color 56 selection_color 88
+        Fl_Progress enemy_hp {selected
+          xywh {316 15 235 35} box GLEAM_ROUND_DOWN_BOX color 56 selection_color 88
+        }
+        Fl_Button sound {
+          label SOUND
+          xywh {244 10 68 40} box GLEAM_DOWN_BOX down_box GLEAM_UP_BOX color 154 selection_color 143 labelfont 1 labelcolor 56
         }
       }
-      Fl_Group msg {open
+      Fl_Group msg {
         xywh {0 355 555 195} box GTK_UP_BOX color 93
       } {
-        Fl_Group special_moves {open selected
+        Fl_Group special_moves {open
           xywh {0 355 315 192} box GTK_UP_BOX color 92 selection_color 92 labelcolor 63 hide
         } {
           Fl_Group move0 {open

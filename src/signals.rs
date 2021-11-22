@@ -46,4 +46,5 @@ pub enum Action {
     Item(ItemScreen),
     Switch(SwitchScreen),
     Check,
+    ToggleMusic,
 }
