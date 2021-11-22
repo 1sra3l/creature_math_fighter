@@ -1,11 +1,22 @@
 use crate::element::*;
 use crate::condition::*;
+use crate::creature::Random;
 use std::fmt;
 
 #[derive(Debug, Clone)]
 pub struct Special {
     pub id:Move,
     pub mp:f64,
+}
+impl Random for Special {
+    type Type = Special;
+    fn random_type(&self) -> Self::Type {
+        let mv = Move::None;
+        Special {
+            id:mv.random_type(),
+            mp:self.random(5.0,30.0),
+        }
+    }
 }
 impl fmt::Display for Special {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
@@ -157,6 +168,34 @@ pub enum Move {
     Slice(Condition),
     Chomp(Condition),
     None,
+}
+impl Random for Move {
+    type Type = Move;
+    fn random_type(&self) -> Self::Type {
+        let mut e = Element::None;
+        e = e.random_type();
+        let c = Condition::None;
+        let val = self.random_rate(15);
+        match val {
+            0 => Move::Tail(e),
+            1 => Move::Horn(e),
+            2 => Move::Fang(e),
+            3 => Move::Claw(e),
+            4 => Move::Slash(e),
+            5 => Move::Smash(e),
+            6 => Move::Pummel(e),
+            7 => Move::Plasma(e),
+            8 => Move::Bite(e),
+            9 => Move::Sting(c),
+            10 => Move::Talon(c),
+            11 => Move::Strike(c),
+            12 => Move::Grab(c),
+            13 => Move::Crush(c),
+            14 => Move::Slice(c),
+            15 => Move::Chomp(c),
+            _=> Move::Tail(e),
+        }
+    }
 }
 impl fmt::Display for Move {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {

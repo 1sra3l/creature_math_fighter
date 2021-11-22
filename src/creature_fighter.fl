@@ -32,8 +32,8 @@ class UserInterface {open
       Fl_Group msg {open
         xywh {0 355 555 195} box GTK_UP_BOX color 93
       } {
-        Fl_Group special_moves {open
-          xywh {0 355 315 192} box GTK_UP_BOX color 92 selection_color 92 labelcolor 63
+        Fl_Group special_moves {open selected
+          xywh {0 355 315 192} box GTK_UP_BOX color 92 selection_color 92 labelcolor 63 hide
         } {
           Fl_Group move0 {open
             xywh {10 362 275 40} box FLAT_BOX color 175
@@ -88,19 +88,19 @@ class UserInterface {open
           xywh {315 355 240 195} box GTK_UP_BOX color 92 labelcolor 56
         } {
           Fl_Button fight {
-            label Fight selected
+            label Fight
             xywh {397 360 80 40} box GLEAM_DOWN_BOX down_box GLEAM_UP_BOX color 154 selection_color 80 labelfont 1 labelcolor 56
           }
           Fl_Button run {
-            label RUN selected
+            label RUN
             xywh {397 408 80 40} box GLEAM_DOWN_BOX down_box GLEAM_UP_BOX color 154 selection_color 95 labelfont 1 labelcolor 56
           }
           Fl_Button switch {
-            label Switch selected
+            label Switch
             xywh {397 456 80 40} box GLEAM_DOWN_BOX down_box GLEAM_UP_BOX color 154 selection_color 63 labelfont 1 labelcolor 56
           }
           Fl_Button item {
-            label Item selected
+            label Item
             xywh {397 505 80 40} box GLEAM_DOWN_BOX down_box GLEAM_UP_BOX color 154 selection_color 143 labelfont 1 labelcolor 56
           }
         }

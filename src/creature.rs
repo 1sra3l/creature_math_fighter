@@ -21,13 +21,13 @@ pub trait Random {
         let max = 5;
         let val = self.random_rate(max);
         match val {
-            0 => return String::from("possum"),
-            1 => return String::from("possum"),
-            2 => return String::from("porcupine"),
-            3 => return String::from("butterfly"),
-            4 => return String::from("possum"),
-            5 => return String::from("chipmonk"),
-            _=> String::from("butterfly"),
+            0 => return String::from("assets/possum"),
+            1 => return String::from("assets/snester"),
+            2 => return String::from("assets/porcupine"),
+            3 => return String::from("assets/butterfly"),
+            4 => return String::from("assets/possum"),
+            5 => return String::from("assets/chipmonk"),
+            _=> String::from("assets/butterfly"),
         }
     }
     fn random_name(&self) ->String {
@@ -205,7 +205,7 @@ impl Random for Creature {
             condition:Condition::None,
             element1:elem,
             element2:elem,
-            rate:self.random(0.0,90.0),
+            rate:self.random(5.0,90.0),
             items:vec![],
             moves:vec![],
             owner:0,
@@ -223,7 +223,7 @@ impl Random for Creature {
             def:def,
             speed:speed,
             special:special,
-            image:self.random_image(),
+            image:self.random_image().to_owned(),
             
         }
     }

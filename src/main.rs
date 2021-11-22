@@ -21,6 +21,7 @@ use crate::item::*;
 
 fn get_image(creature:Creature, view:View) -> Option<SharedImage>{
     let mut res = creature.image.to_owned();
+    
     res.push('/');
     match view {
         View::Left => res.push_str("left"),
@@ -39,6 +40,7 @@ fn get_image(creature:Creature, view:View) -> Option<SharedImage>{
             return None
         },
     };
+    println!("image:{:?}",image_filename);
     let mut image = SharedImage::load(image_filename.as_str());
     if image.is_ok() {
         let current_image = image.ok().unwrap();
@@ -88,12 +90,12 @@ fn main() {
     ui.toss_items.emit(send_action, Action::Item(ItemScreen::Items(ItemUsage::Toss)));
     ui.toss_herbs.emit(send_action, Action::Item(ItemScreen::Herbs(ItemUsage::Toss)));
     ui.toss_relics.emit(send_action, Action::Item(ItemScreen::Relics(ItemUsage::Toss)));
-
-    let enemies:Vec<Element> = vec![Element::None, Element::Earth, Element::Water, Element::Electric, Element::Fire, Element::Wind, Element::Plant, Element::Celestial];
     let mut enemy_iter = 0;
     let mut player = Creature::from_element(Element::Electric);
     let mut creatures:Vec<Creature> = vec![player.clone()];
-    let mut enemy = Creature::from_element(enemies[enemy_iter].clone());
+    let mut enemy = Creature::new();
+    let enemies:Vec<Creature> = vec![enemy.random_type(), enemy.random_type(), enemy.random_type(), enemy.random_type(), enemy.random_type(), enemy.random_type(), Creature::from_element(Element::Plant), Creature::from_element(Element::Water)];
+    enemy = enemies[0].clone();
     ui.hp_guage.set_maximum(player.hp_max);
     ui.hp_guage.set_value(player.hp);
     ui.xp_guage.set_maximum(player.next());
@@ -134,9 +136,10 @@ fn main() {
                     ui.eq0_answer.set_color(Color::by_index(135));
                     let dmg = ui.eq0_dmg.value();
                     let atk = ui.eq0_atk.value();
-                    let ans0 = dmg * atk;
+                    let mut ans0 = dmg * atk;
+                    ans0 = (ans0 * 0.5).round() / 0.5;
                     let u_ans0 = ui.eq0_answer.value();
-                    println!("{} vs {}", ans0, u_ans0);
+                    println!("answer0:{} vs {}", ans0, u_ans0);
                     if ans0 != u_ans0 {
                         ui.eq0_answer.set_color(Color::by_index(1));
                         ui.win.redraw();
@@ -148,9 +151,10 @@ fn main() {
                     // eq 1
                     let def = ui.eq1_def.value();
                     let hp = ui.eq1_hp.value();
-                    let ans1 = def + hp;
+                    let mut ans1 = def + hp;
+                    ans1 = (ans1 * 0.5).round() / 0.5;
                     let u_ans1 = ui.eq1_answer.value();
-                    println!("{} vs {}", ans1, u_ans1);
+                    println!("answer1:{} vs {}", ans1, u_ans1);
                     if ans1 != u_ans1 {
                         ui.eq1_answer.set_color(Color::by_index(1));
                         ui.win.redraw();
@@ -162,9 +166,9 @@ fn main() {
                     let at = ui.eq2_atk.value();
                     let lvl = ui.eq2_level.value();
                     let mut ans2 = ((at * 100.0).round() / 100.0) - ((lvl * 100.0).round() / 100.0);
-                    ans2 = (ans2 * 100.0).round() / 100.0;
+                    ans2 = (ans2 * 0.5).round() / 0.5;
                     let u_ans2 = ui.eq2_answer.value();
-                    println!("{} vs {}", ans2, u_ans2);
+                    println!("answer3:{} vs {}", ans2, u_ans2);
                     if ans2 != u_ans2 {
                         ui.eq2_answer.set_color(Color::by_index(1));
                         ui.win.redraw();
@@ -184,11 +188,11 @@ fn main() {
                         ui.move_guage_1.set_label(mp.to_string().as_str());
                         continue
                     }
-                    let dmg = match player.special(0,enemy.clone()) {
+                    let dmg = match player.special(check_this, enemy.clone()) {
                         Some(dmg) => dmg,
                         None => continue,
                     };
-                    let res = (dmg * 100.0).round() / 100.0;
+                    let res = (dmg * 0.5).round() / 0.5;
                     enemy.hp -= res;
                     player.moves[check_this].mp -= 1.0;
                     ui.move_guage_1.set_value(mp);
@@ -198,14 +202,16 @@ fn main() {
                         player.xp += 100.0 - enemy.rate;
                         player.level_up();
                         
-                        player.get_item(enemy.items[0]);
+                        if enemy.items.len() > 0 {
+                            player.get_item(enemy.items[0]);
+                        }
                         ui.xp_guage.set_value(player.xp);
                         ui.xp_guage.set_maximum(player.next());
                         enemy_iter += 1;
                         if enemy_iter >= enemies.len() {
                             enemy_iter = 0;
                         }
-                        enemy = Creature::from_element(enemies[enemy_iter].clone());
+                        enemy = enemies[enemy_iter].clone();
                         ui.enemy.set_image(get_image(enemy.clone(), View::Left));
                         ui.enemy.set_label(enemy.name.as_str());
                         ui.enemy_hp.set_maximum(enemy.hp_max);
@@ -226,13 +232,15 @@ fn main() {
                         ui.eq0_dmg.set_value(player.get_damage(atk_move.clone(), enemy.element1));
                         ui.eq0_atk.set_value(player.atk);
                         ui.eq0_answer.set_value(0.0);
-                        ui.eq1_def.set_value(enemy.def);
-                        ui.eq1_hp.set_value(enemy.hp);
+                        let def = (enemy.def * 0.5).round() / 0.5;
+                        ui.eq1_def.set_value(def);
+                        let hp = (enemy.hp * 0.5).round() / 0.5;
+                        ui.eq1_hp.set_value(hp);
                         ui.eq1_answer.set_value(0.0);
-                        let mut atk = enemy.random(1.0, enemy.atk);
-                        atk = (atk * 100.0).round() / 100.0;
-                        let mut level = enemy.random(1.0, enemy.level + 1.0);
-                        level = (level * 100.0).round() / 100.0;
+                        let mut atk = enemy.random(1.0, enemy.atk + 2.0);
+                        atk = (atk * 0.5).round() / 0.5;
+                        let mut level = enemy.random(1.0, enemy.level + 2.0);
+                        level = (level * 0.5).round() / 0.5;
                         ui.eq2_atk.set_value(atk);
                         ui.eq2_level.set_value(level);
                         ui.eq2_answer.set_value(0.0);
@@ -250,13 +258,15 @@ fn main() {
                         ui.eq0_dmg.set_value(player.get_damage(atk_move.clone(), enemy.element1));
                         ui.eq0_atk.set_value(player.atk);
                         ui.eq0_answer.set_value(0.0);
-                        ui.eq1_def.set_value(enemy.def);
-                        ui.eq1_hp.set_value(enemy.hp);
+                        let def = (enemy.def * 0.5).round() / 0.5;
+                        ui.eq1_def.set_value(def);
+                        let hp = (enemy.hp * 0.5).round() / 0.5;
+                        ui.eq1_hp.set_value(hp);
                         ui.eq1_answer.set_value(0.0);
-                        let mut atk = enemy.random(1.0, enemy.atk);
-                        atk = (atk * 100.0).round() / 100.0;
-                        let mut level = enemy.random(1.0, enemy.level + 1.0);
-                        level = (level * 100.0).round() / 100.0;
+                        let mut atk = enemy.random(1.0, enemy.atk + 2.0);
+                        atk = (atk * 0.5).round() / 0.5;
+                        let mut level = enemy.random(1.0, enemy.level + 2.0);
+                        level = (level * 0.5).round() / 0.5;
                         ui.eq2_atk.set_value(atk);
                         ui.eq2_level.set_value(level);
                         ui.eq2_answer.set_value(0.0);
@@ -274,13 +284,15 @@ fn main() {
                         ui.eq0_dmg.set_value(player.get_damage(atk_move.clone(), enemy.element1));
                         ui.eq0_atk.set_value(player.atk);
                         ui.eq0_answer.set_value(0.0);
-                        ui.eq1_def.set_value(enemy.def);
-                        ui.eq1_hp.set_value(enemy.hp);
+                        let def = (enemy.def * 0.5).round() / 0.5;
+                        ui.eq1_def.set_value(def);
+                        let hp = (enemy.hp * 0.5).round() / 0.5;
+                        ui.eq1_hp.set_value(hp);
                         ui.eq1_answer.set_value(0.0);
-                        let mut atk = enemy.random(1.0, enemy.atk);
-                        atk = (atk * 100.0).round() / 100.0;
-                        let mut level = enemy.random(1.0, enemy.level + 1.0);
-                        level = (level * 100.0).round() / 100.0;
+                        let mut atk = enemy.random(1.0, enemy.atk + 2.0);
+                        atk = (atk * 0.5).round() / 0.5;
+                        let mut level = enemy.random(1.0, enemy.level + 2.0);
+                        level = (level * 0.5).round() / 0.5;
                         ui.eq2_atk.set_value(atk);
                         ui.eq2_level.set_value(level);
                         ui.eq2_answer.set_value(0.0);
@@ -298,13 +310,15 @@ fn main() {
                         ui.eq0_dmg.set_value(player.get_damage(atk_move.clone(), enemy.element1));
                         ui.eq0_atk.set_value(player.atk);
                         ui.eq0_answer.set_value(0.0);
-                        ui.eq1_def.set_value(enemy.def);
-                        ui.eq1_hp.set_value(enemy.hp);
+                        let def = (enemy.def * 0.5).round() / 0.5;
+                        ui.eq1_def.set_value(def);
+                        let hp = (enemy.hp * 0.5).round() / 0.5;
+                        ui.eq1_hp.set_value(hp);
                         ui.eq1_answer.set_value(0.0);
-                        let mut atk = enemy.random(1.0, enemy.atk);
-                        atk = (atk * 100.0).round() / 100.0;
-                        let mut level = enemy.random(1.0, enemy.level + 1.0);
-                        level = (level * 100.0).round() / 100.0;
+                        let mut atk = enemy.random(1.0, enemy.atk + 2.0);
+                        atk = (atk * 0.5).round() / 0.5;
+                        let mut level = enemy.random(1.0, enemy.level + 2.0);
+                        level = (level * 0.5).round() / 0.5;
                         ui.eq2_atk.set_value(atk);
                         ui.eq2_level.set_value(level);
                         ui.eq2_answer.set_value(0.0);
@@ -430,7 +444,13 @@ fn main() {
                         SwitchScreen::Item(num) => {
                             ui.switch_screen.hide();
                         },
-                        SwitchScreen::HideStats => ui.stats_screen.hide(),
+                        SwitchScreen::HideStats => {
+                            let name = ui.name.value().to_string();
+                            player.name = name.to_owned();
+                            ui.player.set_label(name.as_str());
+                            ui.stats_screen.hide();
+                            ui.win.redraw();
+                        },
                     }
                     
                 },
@@ -439,7 +459,7 @@ fn main() {
                         if enemy_iter >= enemies.len() {
                             enemy_iter = 0;
                         }
-                        enemy = Creature::from_element(enemies[enemy_iter].clone());
+                        enemy = enemies[enemy_iter].clone();
                         ui.enemy.set_image(get_image(enemy.clone(), View::Left));
                         ui.enemy_hp.set_maximum(enemy.hp_max);
                         ui.enemy_hp.set_value(enemy.hp);
