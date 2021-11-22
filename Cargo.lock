@@ -42,10 +42,22 @@ dependencies = [
 name = "creature_fighter"
 version = "0.1.0"
 dependencies = [
+ "ears",
  "ez-pixmap",
  "fl2rust",
  "fltk",
  "rand",
+]
+
+[[package]]
+name = "ears"
+version = "0.8.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e741c53078ec208f07c837fca26cd2624f959140c52268ee0677ad3b8e9b2112"
+dependencies = [
+ "lazy_static",
+ "libc",
+ "pkg-config",
 ]
 
 [[package]]
@@ -111,6 +123,12 @@ name = "paste"
 version = "1.0.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0744126afe1a6dd7f394cb50a716dbe086cb06e255e53d8d0185d82828358fb5"
+
+[[package]]
+name = "pkg-config"
+version = "0.3.22"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "12295df4f294471248581bc09bef3c38a5e46f1e36d6a37353621a0c6c357e1f"
 
 [[package]]
 name = "ppv-lite86"

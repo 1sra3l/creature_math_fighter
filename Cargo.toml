@@ -2,13 +2,21 @@
 name = "creature_fighter"
 version = "0.1.0"
 edition = "2021"
-
+authors = ["Israel Dahl <israeldahl@protonmail.com>"]
+description = "A creature fighter math game written in Rust + FLTK"
+keywords = ["rpg", "clicker", "game", "math"]
+categories = ["game"]
+license = "GPL3"
+homepage = "https://github.com/1sra3l/creature_math_fighter"
+documentation = "https://github.com/1sra3l/creature_math_fighter"
+repository = "https://github.com/1sra3l/creature_math_fighter"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
 fltk = "1.2"
 ez-pixmap = "0.2"
 rand = "0.8.4"
+ears = "0.8.0"
 #fltk-form = "0.1"
 #fltk-form-derive = "0.1"
 

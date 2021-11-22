@@ -18,7 +18,7 @@ pub trait Random {
         n
     }
     fn random_image(&self)->String {
-        let max = 5;
+        let max = 7;
         let val = self.random_rate(max);
         match val {
             0 => return String::from("assets/possum"),
@@ -27,11 +27,11 @@ pub trait Random {
             3 => return String::from("assets/butterfly"),
             4 => return String::from("assets/possum"),
             5 => return String::from("assets/chipmonk"),
-            _=> String::from("assets/butterfly"),
+            _=> String::from("assets/acuteasuar"),
         }
     }
     fn random_name(&self) ->String {
-        let max = 5;
+        let max = 7;
         let val = self.random_rate(max);
         let mut name:String = match val {
             0 => String::from("Ax"),
@@ -40,6 +40,7 @@ pub trait Random {
             3 => String::from("Cor"),
             4 => String::from("Mig"),
             5 => String::from("Den"),
+            7 => String::from("Por"),
             _=> String::from("Rust"),
         };
         let val = self.random_rate(max);
@@ -50,6 +51,7 @@ pub trait Random {
             3 => String::from("timbrle"),
             4 => String::from("darlis"),
             5 => String::from("gerar"),
+            7 => String::from("truder"),
             _=> String::from("ferris"),
         };
         name.push_str(name_second.as_str());

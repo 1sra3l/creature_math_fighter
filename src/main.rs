@@ -11,6 +11,8 @@ use std::fs;
 
 // GUI
 use fltk::{prelude::*, enums::*, image::*, *, input::Input, menu::MenuButton, menu::MenuItem, valuator::ValueInput, group::Group, window::Window};
+extern crate ears;
+use ears::{Music, AudioController};//Sound,
 
 //use fltk_form::{FltkForm, HasProps};
 
@@ -18,6 +20,26 @@ use crate::creature::*;
 use crate::signals::*;
 use crate::element::*;
 use crate::item::*;
+
+fn random_song() -> &'static str{
+    let ele = Element::None;
+    let val = ele.random_rate(12);
+    match val {
+        0 => return "assets/music/0.ogg",
+        1 => return "assets/music/1.ogg",
+        2 => return "assets/music/2.ogg",
+        3 => return "assets/music/3.ogg",
+        4 => return "assets/music/4.ogg",
+        5 => return "assets/music/5.ogg",
+        6 => return "assets/music/6.ogg",
+        7 => return "assets/music/7.ogg",
+        8 => return "assets/music/8.ogg",
+        9 => return "assets/music/9.ogg",
+        10 => return "assets/music/10.ogg",
+        11 => return "assets/music/11.ogg",
+        _=> return "assets/music/12.ogg",
+    }
+}
 
 fn get_image(creature:Creature, view:View) -> Option<SharedImage>{
     let mut res = creature.image.to_owned();
@@ -40,7 +62,7 @@ fn get_image(creature:Creature, view:View) -> Option<SharedImage>{
             return None
         },
     };
-    println!("image:{:?}",image_filename);
+    //println!("image:{:?}",image_filename);
     let mut image = SharedImage::load(image_filename.as_str());
     if image.is_ok() {
         let current_image = image.ok().unwrap();
@@ -119,7 +141,11 @@ fn main() {
     let busy:bool = false;
     let mut check_this:usize = 0;
     ui.win.redraw();
-    
+    let song = random_song();
+    let mut bg_music = Music::new(song).unwrap();
+    // loop music
+    bg_music.set_looping(true);
+    bg_music.play();
     while app.wait() {
         if elapsed > threshold {
             elapsed = 0.0;
@@ -235,8 +261,12 @@ fn main() {
                         ui.enemy_hp.set_maximum(enemy.hp_max);
                         ui.enemy_hp.set_value(enemy.hp);
                     }
-                  check_this = 0;
-                  ui.math.hide();
+                    let song = random_song();
+                    bg_music.stop();
+                    bg_music = Music::new(song).unwrap();
+                    bg_music.play();
+                    check_this = 0;
+                    ui.math.hide();
                 },
                 Action::Move0 => {
                     check_this = 0;
@@ -247,6 +277,10 @@ fn main() {
                             continue
                         }
                         ui.math.show();
+                        let song = random_song();
+                        bg_music.stop();
+                        bg_music = Music::new(song).unwrap();
+                        bg_music.play();
                         ui.eq0_dmg.set_value(player.get_damage(atk_move.clone(), enemy.element1));
                         ui.eq0_atk.set_value(player.atk);
                         ui.eq0_answer.set_value(0.0);
@@ -273,6 +307,10 @@ fn main() {
                             continue
                         }
                         ui.math.show();
+                        let song = random_song();
+                        bg_music.stop();
+                        bg_music = Music::new(song).unwrap();
+                        bg_music.play();
                         ui.eq0_dmg.set_value(player.get_damage(atk_move.clone(), enemy.element1));
                         ui.eq0_atk.set_value(player.atk);
                         ui.eq0_answer.set_value(0.0);
@@ -299,6 +337,10 @@ fn main() {
                             continue
                         }
                         ui.math.show();
+                        let song = random_song();
+                        bg_music.stop();
+                        bg_music = Music::new(song).unwrap();
+                        bg_music.play();
                         ui.eq0_dmg.set_value(player.get_damage(atk_move.clone(), enemy.element1));
                         ui.eq0_atk.set_value(player.atk);
                         ui.eq0_answer.set_value(0.0);
@@ -325,6 +367,10 @@ fn main() {
                             continue
                         }
                         ui.math.show();
+                        let song = random_song();
+                        bg_music.stop();
+                        bg_music = Music::new(song).unwrap();
+                        bg_music.play();
                         ui.eq0_dmg.set_value(player.get_damage(atk_move.clone(), enemy.element1));
                         ui.eq0_atk.set_value(player.atk);
                         ui.eq0_answer.set_value(0.0);
@@ -358,6 +404,10 @@ fn main() {
                 Action::Item(item_screen) => {
                     match item_screen {
                         ItemScreen::Show => {
+                            let song = random_song();
+                            bg_music.stop();
+                            bg_music = Music::new(song).unwrap();
+                            bg_music.play();
                             ui.item_screen.show();
                             ui.items.clear();
                             for item in player.items.clone() {
@@ -401,6 +451,10 @@ fn main() {
                 Action::Switch(switch) => {
                     match switch {
                         SwitchScreen::Show => {
+                            let song = random_song();
+                            bg_music.stop();
+                            bg_music = Music::new(song).unwrap();
+                            bg_music.play();
                             ui.switch_screen.show();
                             let c = creatures                          [0].clone();
                             ui.choose_0.set_image(get_image(c.clone(), View::Icon));
@@ -422,12 +476,20 @@ fn main() {
                                 ui.xp_guage.set_value(player.xp);
                                 ui.player.set_image(get_image(player.clone(), View::Right));
                             }
+                            let song = random_song();
+                            bg_music.stop();
+                            bg_music = Music::new(song).unwrap();
+                            bg_music.play();
                             ui.switch_screen.hide();
                         },
                         SwitchScreen::Stats(num) => {
                             //HARDCODE TODO
                             creatures[0] = player.clone();
                             if num < creatures.len() {
+                                let song = random_song();
+                                bg_music.stop();
+                                bg_music = Music::new(song).unwrap();
+                                bg_music.play();
                                 let c = creatures[num].clone();
                                 ui.stats_screen.show();
                                 ui.hp.set_value(c.hp);
@@ -466,6 +528,10 @@ fn main() {
                             ui.switch_screen.hide();
                         },
                         SwitchScreen::HideStats => {
+                            let song = random_song();
+                            bg_music.stop();
+                            bg_music = Music::new(song).unwrap();
+                            bg_music.play();
                             let name = ui.name.value().to_string();
                             player.name = name.to_owned();
                             ui.player.set_label(name.as_str());
@@ -476,6 +542,10 @@ fn main() {
                     
                 },
                 Action::Run => {
+                        let song = random_song();
+                        bg_music.stop();
+                        bg_music = Music::new(song).unwrap();
+                        bg_music.play();
                         enemy_iter += 1;
                         if enemy_iter >= enemies.len() {
                             enemy_iter = 0;
