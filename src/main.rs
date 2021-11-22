@@ -195,8 +195,26 @@ fn main() {
                     let res = (dmg * 0.5).round() / 0.5;
                     enemy.hp -= res;
                     player.moves[check_this].mp -= 1.0;
-                    ui.move_guage_1.set_value(mp);
-                    ui.move_guage_1.set_label(mp.to_string().as_str());
+                    let ui_mp = player.moves[check_this].mp;
+                    match check_this {
+                        0 => {
+                            ui.move_guage_0.set_value(ui_mp);
+                            ui.move_guage_0.set_label(ui_mp.to_string().as_str());
+                        }
+                        1 => {
+                            ui.move_guage_1.set_value(ui_mp);
+                            ui.move_guage_1.set_label(ui_mp.to_string().as_str());
+                        }
+                        2 => {
+                            ui.move_guage_2.set_value(ui_mp);
+                            ui.move_guage_2.set_label(ui_mp.to_string().as_str());
+                        }
+                        _=> {
+                            ui.move_guage_3.set_value(ui_mp);
+                            ui.move_guage_3.set_label(ui_mp.to_string().as_str());
+                        }
+                    }
+                    ui.win.redraw();
                     ui.enemy_hp.set_value(enemy.hp);
                     if enemy.hp == 0.0 {
                         player.xp += 100.0 - enemy.rate;
@@ -350,7 +368,10 @@ fn main() {
                         ItemScreen::Items(usage) => {
                             let item = match ui.items.text(ui.items.value()) {
                                 Some(item) => item,
-                                None => continue,
+                                None => {
+                                    ui.item_screen.hide();
+                                    continue
+                                },
                             };
                             match usage {
                                 ItemUsage::Use => {
