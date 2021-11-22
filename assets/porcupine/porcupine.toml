@@ -1,0 +1,28 @@
+id = 0
+name = "Porucpiner"
+form = "Basic"
+condition = "None"
+element1 = "Earth"
+element2 = "Earth"
+rate = 50.0
+item = "None"
+owner = 0
+xp = 0
+hp_effort = 50.0
+atk_effort = 10.0
+def_effort = 10.0
+speed_effort = 1.0
+special_effort = 1.0
+hp = 50.0
+atk = 10.0
+def = 10.0
+speed = 1.0
+special = 1.0
+moves = ["A", "B"]
+
+[A]
+id = { pummel = "Earth" }
+mp = 15.0
+[B]
+id = { crush = "Paralisys" }
+mp = 30.0

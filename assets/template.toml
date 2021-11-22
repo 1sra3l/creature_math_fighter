@@ -1,0 +1,27 @@
+id = 0
+name = ""
+form = "Basic"
+condition = "None"
+element1 = ""
+element2 = ""
+rate = 50.0
+item = "None"
+owner = 0
+xp = 0
+hp_effort = 0.0
+atk_effort = 0.0
+def_effort = 0.0
+speed_effort = 0.0
+special_effort = 0.0
+hp = 0.0
+atk = 0.0
+def = 0.0
+speed = 0.0
+special = 0.0
+moves = ["A", "B"]
+[A]
+id = {}
+mp = 0.0
+[B]
+id = {}
+mp = 0.0
