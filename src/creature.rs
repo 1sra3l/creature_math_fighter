@@ -31,7 +31,7 @@ pub trait Random {
         }
     }
     fn random_name(&self) ->String {
-        let max = 7;
+        let max = 8;
         let val = self.random_rate(max);
         let mut name:String = match val {
             0 => String::from("Ax"),
@@ -41,6 +41,7 @@ pub trait Random {
             4 => String::from("Mig"),
             5 => String::from("Den"),
             7 => String::from("Por"),
+            8 => String::from("Bel"),
             _=> String::from("Rust"),
         };
         let val = self.random_rate(max);
@@ -51,7 +52,8 @@ pub trait Random {
             3 => String::from("timbrle"),
             4 => String::from("darlis"),
             5 => String::from("gerar"),
-            7 => String::from("truder"),
+            7 => String::from("trid"),
+            8 => String::from("toph"),
             _=> String::from("ferris"),
         };
         name.push_str(name_second.as_str());
