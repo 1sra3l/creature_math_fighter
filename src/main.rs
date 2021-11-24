@@ -1,11 +1,11 @@
 mod creature_fighter;
-mod creature;
-mod item;
+//mod creature;
+//mod item;
 mod item_images;
 mod signals;
-mod condition;
-mod moves;
-mod element;
+//mod condition;
+//mod moves;
+//mod element;
 
 use std::fs;
 
@@ -14,16 +14,21 @@ use fltk::{prelude::*, enums::*, image::*, *, input::Input, menu::MenuButton, me
 extern crate ears;
 use ears::{Music, AudioController};//Sound,
 
-//use fltk_form::{FltkForm, HasProps};
+use rpgstat::creature::Stats as Creature;
+use rpgstat::types::Normal as Element;
+use rpgstat::random::*;
+use rpgstat::special::ManaCost;
 
-use crate::creature::*;
+
+use fltk_form::{FltkForm, HasProps};
+use toml::*;
+use serde::{Deserialize, Serialize};
+
 use crate::signals::*;
-use crate::element::*;
-use crate::item::*;
 
 fn random_song() -> &'static str{
     let ele = Element::None;
-    let val = ele.random_rate(12);
+    let val = random_0max(12);
     match val {
         0 => return "assets/music/0.ogg",
         1 => return "assets/music/1.ogg",
@@ -40,7 +45,19 @@ fn random_song() -> &'static str{
         _=> return "assets/music/12.ogg",
     }
 }
-
+fn random_image()->String {
+    let max = 7;
+    let val = random_0max(max);
+    match val {
+        0 => return String::from("assets/possum"),
+        1 => return String::from("assets/snester"),
+        2 => return String::from("assets/porcupine"),
+        3 => return String::from("assets/butterfly"),
+        4 => return String::from("assets/possum"),
+        5 => return String::from("assets/chipmonk"),
+        _=> String::from("assets/acuteasuar"),
+    }
+}
 fn get_image(creature:Creature, view:View) -> Option<SharedImage>{
     let mut res = creature.image.to_owned();
     
@@ -95,7 +112,7 @@ fn main() {
     ui.choose_2.emit(send_action, Action::Switch(SwitchScreen::Choose(2)));
     ui.choose_3.emit(send_action, Action::Switch(SwitchScreen::Choose(3)));
     ui.choose_4.emit(send_action, Action::Switch(SwitchScreen::Choose(4)));
-    //Stats
+    //Creature
     ui.show_creature_0.emit(send_action, Action::Switch(SwitchScreen::Stats(0)));
     ui.show_creature_1.emit(send_action, Action::Switch(SwitchScreen::Stats(1)));
     ui.show_creature_2.emit(send_action, Action::Switch(SwitchScreen::Stats(2)));
@@ -114,10 +131,13 @@ fn main() {
     ui.toss_relics.emit(send_action, Action::Item(ItemScreen::Relics(ItemUsage::Toss)));
     ui.sound.emit(send_action, Action::ToggleMusic);
     let mut enemy_iter = 0;
-    let mut player = Creature::from_element(Element::Electric);
+    let mut player = Creature::new();
+    player = player.random_type();
+    player.image = random_image();
+    let mut name = player.name.clone();
     let mut creatures:Vec<Creature> = vec![player.clone()];
     let mut enemy = Creature::new();
-    let enemies:Vec<Creature> = vec![enemy.random_type(), enemy.random_type(), enemy.random_type(), enemy.random_type(), enemy.random_type(), enemy.random_type(), Creature::from_element(Element::Plant), Creature::from_element(Element::Water)];
+    let mut enemies:Vec<Creature> = vec![enemy.random_type(), enemy.random_type(), enemy.random_type(), enemy.random_type(), enemy.random_type(), enemy.random_type()];
     enemy = enemies[0].clone();
     ui.hp_guage.set_maximum(player.hp_max);
     ui.hp_guage.set_value(player.hp);
@@ -127,21 +147,20 @@ fn main() {
     ui.enemy_hp.set_value(enemy.hp);
     ui.player.set_image(get_image(player.clone(), View::Right));
     ui.player.set_label(player.name.as_str());
+    enemy.image = random_image();
     ui.enemy.set_image(get_image(enemy.clone(), View::Left));
     ui.enemy.set_label(enemy.name.as_str());
 
-    let special = player.moves[0].clone();
-    ui.move_guage_0.set_maximum(special.mp);
-    ui.move_button_0.set_label(special.name().as_str());
-    let special = player.moves[1].clone();
-    ui.move_guage_1.set_maximum(special.mp);
-    ui.move_button_1.set_label(special.name().as_str());
+    ui.move_guage_0.set_maximum(player.move0_mp);
+    ui.move_button_0.set_label(player.move0.to_string().as_str());
+    ui.move_guage_1.set_maximum(player.move1_mp);
+    ui.move_button_1.set_label(player.move1.to_string().as_str());
     // timer
     let mut elapsed:f64 = 0.0;
     let threshold:f64 = 500.0;
     let busy:bool = false;
-    let mut playing:bool = true;
-    let mut check_this:usize = 0;
+    let mut playing:bool = false;
+    let mut current_move:u32 = 0;
     //TODO config file read opts
 /*
 music = true
@@ -231,38 +250,33 @@ items = { item="element/condition" }
                     if !passed {
                         continue
                     }
-                    //
-                    let mut special = player.moves[check_this].clone();
-                    let mp = special.mp;
-                    if mp == 0.0 {
-                        ui.move_guage_1.set_value(mp);
-                        ui.move_guage_1.set_label(mp.to_string().as_str());
-                        continue
-                    }
-                    let dmg = match player.special(check_this, enemy.clone()) {
-                        Some(dmg) => dmg,
-                        None => continue,
-                    };
+                    let special_move = player.clone().get_move(current_move);
+                    let dmg = special_move.damage(player.level);
                     let res = (dmg * 0.5).round() / 0.5;
                     enemy.hp -= res;
-                    player.moves[check_this].mp -= 1.0;
-                    let ui_mp = player.moves[check_this].mp;
-                    match check_this {
-                        0 => {
-                            ui.move_guage_0.set_value(ui_mp);
-                            ui.move_guage_0.set_label(ui_mp.to_string().as_str());
-                        }
+                    player.use_mp(current_move);
+                    let ui_mp = player.get_mp(current_move);
+                    let special_name = player.clone().get_move(current_move);
+                    match current_move {
                         1 => {
                             ui.move_guage_1.set_value(ui_mp);
-                            ui.move_guage_1.set_label(ui_mp.to_string().as_str());
+                            ui.move_guage_1.set_label(special_name.to_string().as_str());
                         }
                         2 => {
                             ui.move_guage_2.set_value(ui_mp);
-                            ui.move_guage_2.set_label(ui_mp.to_string().as_str());
+                            ui.move_guage_2.set_label(special_name.to_string().as_str());
                         }
-                        _=> {
+                        3=> {
                             ui.move_guage_3.set_value(ui_mp);
-                            ui.move_guage_3.set_label(ui_mp.to_string().as_str());
+                            ui.move_guage_3.set_label(special_name.to_string().as_str());
+                        }
+                        4=> {
+                            //ui.move_guage_4.set_value(ui_mp);
+                            //ui.move_guage_4.set_label(special_name.to_string().as_str());
+                        }
+                        _ => {
+                            ui.move_guage_0.set_value(ui_mp);
+                            ui.move_guage_0.set_label(special_name.to_string().as_str());
                         }
                     }
                     ui.win.redraw();
@@ -271,8 +285,8 @@ items = { item="element/condition" }
                         player.xp += 100.0 - enemy.rate;
                         player.level_up();
                         
-                        if enemy.items.len() > 0 {
-                            player.get_item(enemy.items[0]);
+                        if enemy.items().len() > 0 {
+                            player.add_item(enemy.items()[0]);
                         }
                         ui.xp_guage.set_value(player.xp);
                         ui.xp_guage.set_maximum(player.next());
@@ -281,6 +295,8 @@ items = { item="element/condition" }
                             enemy_iter = 0;
                         }
                         enemy = enemies[enemy_iter].clone();
+                        enemy.image = random_image();
+                        enemy.name = random_character_name().to_owned();
                         ui.enemy.set_image(get_image(enemy.clone(), View::Left));
                         ui.enemy.set_label(enemy.name.as_str());
                         ui.enemy_hp.set_maximum(enemy.hp_max);
@@ -292,14 +308,14 @@ items = { item="element/condition" }
                         bg_music = Music::new(song).unwrap();
                         bg_music.play();
                     }
-                    check_this = 0;
+                    current_move = 0;
                     ui.math.hide();
                 },
                 Action::Move0 => {
-                    check_this = 0;
-                    if player.moves.clone().len()  > check_this {
-                        let atk_move = player.moves[check_this].clone();
-                        let mp = atk_move.mp;
+                    current_move = 0;
+                    if player.clone().valid_move(current_move) {
+                        let atk_move = player.get_move(current_move);
+                        let mp:f64 = atk_move.mp_total(0.0);
                         if mp == 0.0 {
                             continue
                         }
@@ -310,7 +326,7 @@ items = { item="element/condition" }
                             bg_music = Music::new(song).unwrap();
                             bg_music.play();
                         }
-                        ui.eq0_dmg.set_value(player.get_damage(atk_move.clone(), enemy.element1));
+                        ui.eq0_dmg.set_value(atk_move.damage(player.level));
                         ui.eq0_atk.set_value(player.atk);
                         ui.eq0_answer.set_value(0.0);
                         let def = (enemy.def * 0.5).round() / 0.5;
@@ -328,10 +344,10 @@ items = { item="element/condition" }
                     }
                 },
                 Action::Move1 => {
-                    check_this = 1;
-                    if player.moves.clone().len()  > check_this {
-                        let atk_move = player.moves[check_this].clone();
-                        let mp = atk_move.mp;
+                    current_move = 1;
+                    if player.clone().valid_move(current_move) {
+                        let atk_move = player.get_move(current_move);
+                        let mp:f64 = atk_move.mp_total(0.0);
                         if mp == 0.0 {
                             continue
                         }
@@ -342,7 +358,7 @@ items = { item="element/condition" }
                             bg_music = Music::new(song).unwrap();
                             bg_music.play();
                         }
-                        ui.eq0_dmg.set_value(player.get_damage(atk_move.clone(), enemy.element1));
+                        ui.eq0_dmg.set_value(atk_move.damage(player.level));
                         ui.eq0_atk.set_value(player.atk);
                         ui.eq0_answer.set_value(0.0);
                         let def = (enemy.def * 0.5).round() / 0.5;
@@ -360,10 +376,10 @@ items = { item="element/condition" }
                     }
                 },
                 Action::Move2 => {
-                    check_this = 2;
-                    if player.moves.clone().len()  > check_this {
-                        let atk_move = player.moves[check_this].clone();
-                        let mp = atk_move.mp;
+                    current_move = 2;
+                    if player.clone().valid_move(current_move) {
+                        let atk_move = player.get_move(current_move);
+                        let mp:f64 = atk_move.mp_total(0.0);
                         if mp == 0.0 {
                             continue
                         }
@@ -374,7 +390,7 @@ items = { item="element/condition" }
                             bg_music = Music::new(song).unwrap();
                             bg_music.play();
                         }
-                        ui.eq0_dmg.set_value(player.get_damage(atk_move.clone(), enemy.element1));
+                        ui.eq0_dmg.set_value(atk_move.damage(player.level));
                         ui.eq0_atk.set_value(player.atk);
                         ui.eq0_answer.set_value(0.0);
                         let def = (enemy.def * 0.5).round() / 0.5;
@@ -392,10 +408,10 @@ items = { item="element/condition" }
                     }
                 },
                 Action::Move3 => {
-                    check_this = 3;
-                    if player.moves.clone().len()  > check_this {
-                        let atk_move = player.moves[check_this].clone();
-                        let mp = atk_move.mp;
+                    current_move = 3;
+                    if player.clone().valid_move(current_move) {
+                        let atk_move = player.get_move(current_move);
+                        let mp:f64 = atk_move.mp_total(0.0);
                         if mp == 0.0 {
                             continue
                         }
@@ -406,7 +422,7 @@ items = { item="element/condition" }
                             bg_music = Music::new(song).unwrap();
                             bg_music.play();
                         }
-                        ui.eq0_dmg.set_value(player.get_damage(atk_move.clone(), enemy.element1));
+                        ui.eq0_dmg.set_value(atk_move.damage(player.level));
                         ui.eq0_atk.set_value(player.atk);
                         ui.eq0_answer.set_value(0.0);
                         let def = (enemy.def * 0.5).round() / 0.5;
@@ -428,12 +444,22 @@ items = { item="element/condition" }
                         ui.special_moves.hide();
                     } else {
                         ui.special_moves.show();
-                        let special = player.moves[0].clone();
-                        ui.move_guage_0.set_value(special.mp);
-                        ui.move_guage_0.set_label(special.mp.to_string().as_str());
-                        let special = player.moves[1].clone();
-                        ui.move_guage_1.set_value(special.mp);
-                        ui.move_guage_1.set_label(special.mp.to_string().as_str());
+                        let special = player.clone().get_move(0);
+                        ui.move_guage_0.set_value(player.clone().get_mp(0));
+                        ui.move_guage_0.set_maximum(special.mp_total(0.0));
+                        ui.move_guage_0.set_label(special.to_string().as_str());
+                        let special = player.clone().get_move(1);
+                        ui.move_guage_1.set_value(player.clone().get_mp(1));
+                        ui.move_guage_1.set_maximum(special.mp_total(0.0));
+                        ui.move_guage_1.set_label(special.to_string().as_str());
+                        let special = player.clone().get_move(2);
+                        ui.move_guage_2.set_value(player.clone().get_mp(2));
+                        ui.move_guage_2.set_maximum(special.mp_total(0.0));
+                        ui.move_guage_2.set_label(special.to_string().as_str());
+                        let special = player.clone().get_move(3);
+                        ui.move_guage_3.set_maximum(special.mp_total(0.0));
+                        ui.move_guage_3.set_value(player.clone().get_mp(3));
+                        ui.move_guage_3.set_label(special.to_string().as_str());
                     }
                 },
                 Action::Item(item_screen) => {
@@ -447,30 +473,44 @@ items = { item="element/condition" }
                             }
                             ui.item_screen.show();
                             ui.items.clear();
-                            for item in player.items.clone() {
+                            for item in player.clone().items() {
                                 let v = item.to_string();
                                 ui.items.add(v.as_str());
                             }
                         },
                         ItemScreen::Items(usage) => {
-                            let item = match ui.items.text(ui.items.value()) {
-                                Some(item) => item,
-                                None => {
-                                    ui.item_screen.hide();
-                                    continue
-                                },
-                            };
+                            let item = ui.items.value() - 1;
+                            if item < 0 {
+                                continue
+                            }
                             match usage {
                                 ItemUsage::Use => {
-                                    player.use_item(item);
-                                    creatures[0] = player.clone();
-                                    let special = player.moves[0].clone();
-                                    ui.move_guage_0.set_value(special.mp);
-                                    ui.move_guage_0.set_label(special.mp.to_string().as_str());
-                                    let special = player.moves[1].clone();
-                                    ui.move_guage_1.set_value(special.mp);
-                                    ui.move_guage_1.set_label(special.mp.to_string().as_str());
-                                    ui.item_screen.hide();
+                                    player.use_item(item as u32);
+                                    //
+                                    ui.hp_guage.set_maximum(player.hp_max);
+                                    ui.hp_guage.set_value(player.hp);
+                                    ui.xp_guage.set_maximum(player.next());
+                                    ui.xp_guage.set_value(player.xp);
+                                    ui.player.set_image(get_image(player.clone(), View::Right));
+                                    // special guages
+                                    let special = player.clone().get_move(0);
+                                    ui.move_guage_0.set_value(player.clone().get_mp(0));
+                                    ui.move_guage_0.set_maximum(special.mp_total(0.0));
+                                    ui.move_guage_0.set_value(player.clone().get_mp(0));
+                                    ui.move_guage_0.set_maximum(special.mp_total(0.0));
+                                    ui.move_guage_0.set_label(special.to_string().as_str());
+                                    let special = player.clone().get_move(1);
+                                    ui.move_guage_1.set_value(player.clone().get_mp(1));
+                                    ui.move_guage_1.set_maximum(special.mp_total(0.0));
+                                    ui.move_guage_1.set_label(special.to_string().as_str());
+                                    let special = player.clone().get_move(2);
+                                    ui.move_guage_2.set_value(player.clone().get_mp(2));
+                                    ui.move_guage_2.set_maximum(special.mp_total(0.0));
+                                    ui.move_guage_2.set_label(special.to_string().as_str());
+                                    let special = player.clone().get_move(3);
+                                    ui.move_guage_3.set_maximum(special.mp_total(0.0));
+                                    ui.move_guage_3.set_value(player.clone().get_mp(3));
+                                    ui.move_guage_3.set_label(special.to_string().as_str());
                                 },
                                 ItemUsage::Give => {ui.item_screen.hide();},
                                 ItemUsage::Toss => {ui.item_screen.hide();},
@@ -524,46 +564,13 @@ items = { item="element/condition" }
                             ui.switch_screen.hide();
                         },
                         SwitchScreen::Stats(num) => {
-                            //HARDCODE TODO
-                            creatures[0] = player.clone();
-                            if num < creatures.len() {
-                                if playing {
-                                    let song = random_song();
-                                    bg_music.stop();
-                                    bg_music = Music::new(song).unwrap();
-                                    bg_music.play();
-                                }
-                                let c = creatures[num].clone();
+                            println!("num={}",num);
+                            if num <= creatures.len() {
                                 ui.stats_screen.show();
-                                ui.hp.set_value(c.hp);
-                                ui.xp.set_value(c.total_xp);
-                                ui.level.set_value(c.level);
-                                ui.id.set_value(c.id as f64);
-                                ui.name.set_value(c.name.as_str());
-                                ui.form.set_value(c.form.to_string().as_str());
-                                ui.element1.set_value(c.element1.to_string().as_str());
-                                ui.element2.set_value(c.element2.to_string().as_str());
-                                ui.rate.set_value(c.rate);
-                                ui.hp_effort.set_value(c.hp_effort);
-                                ui.atk_effort.set_value(c.atk_effort);
-                                ui.def_effort.set_value(c.def_effort);
-                                ui.def.set_value(c.def);
-                                ui.atk.set_value(c.atk);
-                                ui.speed.set_value(c.speed);
-                                ui.special.set_value(c.special);
-                                ui.speed_effort.set_value(c.speed_effort);
-                                ui.special_effort.set_value(c.special_effort);
-                                ui.hp_max.set_value(c.hp_max);
-                                ui.stats_image.set_image(get_image(c.clone(), View::Right));
-                                ui.moves.clear();
-                                for m in c.moves {
-                                    ui.moves.add(m.to_string().as_str());
-                                }
-                                for m in c.items {
-                                    ui.stat_items.add(m.to_string().as_str());
-                                }
-                                //ui..set_value(c.);
-                                
+                                ui.stat_viewer.begin();
+                                let s = creatures[num].clone().generate();
+                                ui.stat_viewer.end();
+                                ui.stats_image.set_image(get_image(creatures[num].clone(), View::Right));
                             }
                             ui.switch_screen.hide();
                         },
@@ -577,9 +584,6 @@ items = { item="element/condition" }
                                 bg_music = Music::new(song).unwrap();
                                 bg_music.play();
                             }
-                            let name = ui.name.value().to_string();
-                            player.name = name.to_owned();
-                            ui.player.set_label(name.as_str());
                             ui.stats_screen.hide();
                             ui.win.redraw();
                         },
@@ -598,6 +602,8 @@ items = { item="element/condition" }
                         enemy_iter = 0;
                     }
                     enemy = enemies[enemy_iter].clone();
+                    enemy.image = random_image();
+                    enemy.name = random_character_name().to_owned();
                     ui.enemy.set_image(get_image(enemy.clone(), View::Left));
                     ui.enemy_hp.set_maximum(enemy.hp_max);
                     ui.enemy_hp.set_value(enemy.hp);

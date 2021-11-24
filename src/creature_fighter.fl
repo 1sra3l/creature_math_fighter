@@ -8,7 +8,7 @@ class UserInterface {open
   } {
     Fl_Window win {
       label {Creature Fighter} open
-      xywh {582 108 555 545} type Double resizable visible
+      xywh {763 108 555 545} type Double resizable visible
     } {
       Fl_Group bg {open
         xywh {0 0 569 355} box FLAT_BOX color 223 resizable
@@ -25,7 +25,7 @@ class UserInterface {open
         Fl_Progress xp_guage {
           xywh {30 60 195 20} box GLEAM_ROUND_DOWN_BOX color 47 selection_color 180
         }
-        Fl_Progress enemy_hp {selected
+        Fl_Progress enemy_hp {
           xywh {316 15 235 35} box GLEAM_ROUND_DOWN_BOX color 56 selection_color 88
         }
         Fl_Button sound {
@@ -278,98 +278,106 @@ class UserInterface {open
         }
       }
       Fl_Group stats_screen {open
-        xywh {0 0 555 545} box GLEAM_DOWN_BOX color 213 hide
+        xywh {-10 0 567 545} box GLEAM_DOWN_BOX color 213 hide
       } {
-        Fl_Value_Output hp {
-          label HP
-          xywh {385 345 70 25} box GLEAM_DOWN_BOX color 255 labelcolor 56 textcolor 56
+        Fl_Group {} {open
+          xywh {25 10 530 535} hide
+        } {
+          Fl_Value_Output hp {
+            label HP
+            xywh {390 350 70 25} box GLEAM_DOWN_BOX color 255 labelcolor 56 textcolor 56
+          }
+          Fl_Value_Output level {
+            label LEVEL
+            xywh {470 10 70 25} box GLEAM_DOWN_BOX color 255 labelcolor 56 textcolor 56
+          }
+          Fl_Value_Output id {
+            label ID
+            xywh {266 15 25 25} box GLEAM_DOWN_BOX color 255 labelcolor 56 textcolor 56
+          }
+          Fl_Input name {
+            label NAME
+            xywh {101 15 135 25} box GLEAM_DOWN_BOX color 255 labelcolor 56 textcolor 56
+          }
+          Fl_Output form {
+            label Form
+            xywh {101 47 135 25} box GLEAM_DOWN_BOX color 255 labelcolor 56 textcolor 56
+          }
+          Fl_Output element1 {
+            label Element
+            xywh {101 80 135 25} box GLEAM_DOWN_BOX color 255 labelcolor 56 textcolor 56
+          }
+          Fl_Output element2 {
+            label Element
+            xywh {101 112 135 25} box GLEAM_DOWN_BOX color 255 labelcolor 56 textcolor 56
+          }
+          Fl_Value_Output rate {
+            label RATE
+            xywh {470 40 70 25} box GLEAM_DOWN_BOX color 255 labelcolor 56 textcolor 56
+          }
+          Fl_Value_Output hp_effort {
+            label {HP Growth}
+            xywh {470 71 70 25} box GLEAM_DOWN_BOX color 255 labelcolor 56 textcolor 56
+          }
+          Fl_Value_Output atk_effort {
+            label {ATK Growth}
+            xywh {470 102 70 25} box GLEAM_DOWN_BOX color 255 labelcolor 56 textcolor 56
+          }
+          Fl_Value_Output def_effort {
+            label {DEF Growth}
+            xywh {470 133 70 25} box GLEAM_DOWN_BOX color 255 labelcolor 56 textcolor 56
+          }
+          Fl_Value_Output def {
+            label DEF
+            xywh {470 164 70 25} box GLEAM_DOWN_BOX color 255 labelcolor 56 textcolor 56
+          }
+          Fl_Value_Output atk {
+            label ATK
+            xywh {470 195 70 25} box GLEAM_DOWN_BOX color 255 labelcolor 56 textcolor 56
+          }
+          Fl_Value_Output speed {
+            label SPEED
+            xywh {470 226 70 25} box GLEAM_DOWN_BOX color 255 labelcolor 56 textcolor 56
+          }
+          Fl_Value_Output special {
+            label SPECIAL
+            xywh {470 257 70 25} box GLEAM_DOWN_BOX color 255 labelcolor 56 textcolor 56
+          }
+          Fl_Value_Output speed_effort {
+            label {SPEED Growth}
+            xywh {470 288 70 25} box GLEAM_DOWN_BOX color 255 labelcolor 56 textcolor 56
+          }
+          Fl_Value_Output special_effort {
+            label {SPECIAL Growth}
+            xywh {470 319 70 25} box GLEAM_DOWN_BOX color 255 labelcolor 56 textcolor 56
+          }
+          Fl_Value_Output hp_max {
+            label {/}
+            xywh {470 350 70 25} box GLEAM_DOWN_BOX color 255 labelfont 1 labelcolor 56 textcolor 56
+          }
+          Fl_Value_Output xp {
+            label XP
+            xywh {265 45 160 25} box GLEAM_DOWN_BOX color 255 labelcolor 56 textcolor 56
+          }
+          Fl_Browser stat_items {
+            label Items
+            xywh {91 145 145 120} type Hold box GLEAM_DOWN_BOX color 255 labelcolor 56 align 4 textcolor 56
+          }
+          Fl_Browser moves {
+            label Moves
+            xywh {240 400 301 120} type Hold box GLEAM_DOWN_BOX color 255 labelcolor 56 align 1 textcolor 56
+          }
         }
-        Fl_Value_Output level {
-          label LEVEL
-          xywh {465 5 70 25} box GLEAM_DOWN_BOX color 255 labelcolor 56 textcolor 56
-        }
-        Fl_Value_Output id {
-          label ID
-          xywh {261 10 25 25} box GLEAM_DOWN_BOX color 255 labelcolor 56 textcolor 56
-        }
-        Fl_Input name {
-          label NAME
-          xywh {96 10 135 25} box GLEAM_DOWN_BOX color 255 labelcolor 56 textcolor 56
-        }
-        Fl_Output form {
-          label Form
-          xywh {96 42 135 25} box GLEAM_DOWN_BOX color 255 labelcolor 56 textcolor 56
-        }
-        Fl_Output element1 {
-          label Element
-          xywh {96 75 135 25} box GLEAM_DOWN_BOX color 255 labelcolor 56 textcolor 56
-        }
-        Fl_Output element2 {
-          label Element
-          xywh {96 107 135 25} box GLEAM_DOWN_BOX color 255 labelcolor 56 textcolor 56
-        }
-        Fl_Value_Output rate {
-          label RATE
-          xywh {465 35 70 25} box GLEAM_DOWN_BOX color 255 labelcolor 56 textcolor 56
-        }
-        Fl_Value_Output hp_effort {
-          label {HP Growth}
-          xywh {465 66 70 25} box GLEAM_DOWN_BOX color 255 labelcolor 56 textcolor 56
-        }
-        Fl_Value_Output atk_effort {
-          label {ATK Growth}
-          xywh {465 97 70 25} box GLEAM_DOWN_BOX color 255 labelcolor 56 textcolor 56
-        }
-        Fl_Value_Output def_effort {
-          label {DEF Growth}
-          xywh {465 128 70 25} box GLEAM_DOWN_BOX color 255 labelcolor 56 textcolor 56
-        }
-        Fl_Value_Output def {
-          label DEF
-          xywh {465 159 70 25} box GLEAM_DOWN_BOX color 255 labelcolor 56 textcolor 56
-        }
-        Fl_Value_Output atk {
-          label ATK
-          xywh {465 190 70 25} box GLEAM_DOWN_BOX color 255 labelcolor 56 textcolor 56
-        }
-        Fl_Value_Output speed {
-          label SPEED
-          xywh {465 221 70 25} box GLEAM_DOWN_BOX color 255 labelcolor 56 textcolor 56
-        }
-        Fl_Value_Output special {
-          label SPECIAL
-          xywh {465 252 70 25} box GLEAM_DOWN_BOX color 255 labelcolor 56 textcolor 56
-        }
-        Fl_Value_Output speed_effort {
-          label {SPEED Growth}
-          xywh {465 283 70 25} box GLEAM_DOWN_BOX color 255 labelcolor 56 textcolor 56
-        }
-        Fl_Value_Output special_effort {
-          label {SPECIAL Growth}
-          xywh {465 314 70 25} box GLEAM_DOWN_BOX color 255 labelcolor 56 textcolor 56
-        }
-        Fl_Value_Output hp_max {
-          label {/}
-          xywh {465 345 70 25} box GLEAM_DOWN_BOX color 255 labelfont 1 labelcolor 56 textcolor 56
-        }
-        Fl_Value_Output xp {
-          label XP
-          xywh {260 40 160 25} box GLEAM_DOWN_BOX color 255 labelcolor 56 textcolor 56
-        }
-        Fl_Browser stat_items {
-          label Items
-          xywh {86 140 145 120} type Hold box GLEAM_DOWN_BOX color 255 labelcolor 56 align 4 textcolor 56
-        }
-        Fl_Browser moves {
-          label Moves
-          xywh {235 395 301 120} type Hold box GLEAM_DOWN_BOX color 255 labelcolor 56 align 1 textcolor 56
-        }
-        Fl_Button hide_stats {
-          label CLOSE
-          xywh {40 485 65 40} box GLEAM_DOWN_BOX down_box GLEAM_UP_BOX color 1 selection_color 64 labelcolor 255
-        }
-        Fl_Box stats_image {
-          xywh {30 270 200 190} box GLEAM_DOWN_BOX color 79
+        Fl_Scroll stat_viewer {open
+          xywh {0 0 555 545}
+        } {
+          Fl_Button hide_stats {
+            label CLOSE selected
+            xywh {30 490 65 40} box GLEAM_DOWN_BOX down_box GLEAM_UP_BOX color 1 selection_color 64 labelcolor 255
+          }
+          Fl_Box stats_image {
+            xywh {10 275 200 190} box GLEAM_DOWN_BOX color 79
+          }
         }
       }
       Fl_Group math {open
