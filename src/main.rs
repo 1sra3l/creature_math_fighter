@@ -19,7 +19,7 @@ use rpgstat::types::Normal as Element;
 use rpgstat::random::*;
 use rpgstat::special::ManaCost;
 
-
+use fltk_form_derive::*;
 use fltk_form::{FltkForm, HasProps};
 use toml::*;
 use serde::{Deserialize, Serialize};
@@ -567,8 +567,9 @@ items = { item="element/condition" }
                             println!("num={}",num);
                             if num <= creatures.len() {
                                 ui.stats_screen.show();
+                                let c = creatures[num].clone();
                                 ui.stat_viewer.begin();
-                                let s = creatures[num].clone().generate();
+                                let s = c.view();
                                 ui.stat_viewer.end();
                                 ui.stats_image.set_image(get_image(creatures[num].clone(), View::Right));
                             }
