@@ -428,7 +428,7 @@ dependencies = [
 [[package]]
 name = "rpg-stat"
 version = "4.0.0"
-source = "git+https://github.com/1sra3l/rpg-stat.git#ed3ec3973ecb07d1afc70852f722a1e331913814"
+source = "git+https://github.com/1sra3l/rpg-stat.git#545593d4eca8769b163b9404159c4c099bd06c67"
 dependencies = [
  "clap",
  "fltk",

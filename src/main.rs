@@ -296,7 +296,7 @@ items = { item="element/condition" }
                         }
                         enemy = enemies[enemy_iter].clone();
                         enemy.image = random_image();
-                        enemy.name = random_character_name().to_owned();
+                        enemy.name = random_creature_name().to_owned();
                         ui.enemy.set_image(get_image(enemy.clone(), View::Left));
                         ui.enemy.set_label(enemy.name.as_str());
                         ui.enemy_hp.set_maximum(enemy.hp_max);
@@ -603,7 +603,7 @@ items = { item="element/condition" }
                     }
                     enemy = enemies[enemy_iter].clone();
                     enemy.image = random_image();
-                    enemy.name = random_character_name().to_owned();
+                    enemy.name = random_creature_name().to_owned();
                     ui.enemy.set_image(get_image(enemy.clone(), View::Left));
                     ui.enemy_hp.set_maximum(enemy.hp_max);
                     ui.enemy_hp.set_value(enemy.hp);
