@@ -8,14 +8,6 @@ Of course all the creatures are libre, and will be more and more randomly genera
 
 Currently names are completely random syllable-based names.  It produces fairly consistent names, though I do not know every language on the planet, so it may inadvertantly produce words I do not know the meaning of.  I would be glad to remove/change syllable combinations if it becomes clear they are desired to be changed.
 
-## Kids like math
-
-Kids that are into math things like Pokemon stats, that is.
-
-## Obligatory screenie
-
-'Cause who am I kidding, it is 2021, you need a screenie on gh if you have a GUI
-
 ### Here is the basic layout:
 
 ![Alt text](/screenies/ui.png?raw=true "UI")
