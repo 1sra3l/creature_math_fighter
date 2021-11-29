@@ -7,21 +7,3 @@ If you like Pokemon interfaces for battles that make you do a random equation an
 Of course all the creatures are libre, and will be more and more randomly generated as I am able to put in the work.
 
 Currently names are completely random syllable-based names.  It produces fairly consistent names, though I do not know every language on the planet, so it may inadvertantly produce words I do not know the meaning of.  I would be glad to remove/change syllable combinations if it becomes clear they are desired to be changed.
-
-### Here is the basic layout:
-
-![Alt text](/screenies/ui.png?raw=true "UI")
-
-
-### Special Moves, (via "Fight")
-
-![Alt text](/screenies/fight.png?raw=true "UI")
-
-### FLTK FORM!!!
-
-![Alt text](/screenies/fltkform.png?raw=true "UI")
-
-
-### Switch Characters
-
-![Alt text](/screenies/switch.png?raw=true "UI")

@@ -20,7 +20,8 @@ use rpgstat::random::*;
 use rpgstat::special::ManaCost;
 
 use fltk_form_derive::*;
-use fltk_form::{FltkForm, HasProps};
+use fltk_form::FltkForm;
+
 use toml::*;
 use serde::{Deserialize, Serialize};
 
@@ -28,21 +29,17 @@ use crate::signals::*;
 
 fn random_song() -> &'static str{
     let ele = Element::None;
-    let val = random_0max(12);
+    let val = random_0max(7);
+    //println!("{}:- song 2 is default", val);
     match val {
         0 => return "assets/music/0.ogg",
         1 => return "assets/music/1.ogg",
-        2 => return "assets/music/2.ogg",
-        3 => return "assets/music/3.ogg",
-        4 => return "assets/music/4.ogg",
-        5 => return "assets/music/5.ogg",
-        6 => return "assets/music/6.ogg",
-        7 => return "assets/music/7.ogg",
-        8 => return "assets/music/8.ogg",
-        9 => return "assets/music/9.ogg",
-        10 => return "assets/music/10.ogg",
-        11 => return "assets/music/11.ogg",
-        _=> return "assets/music/12.ogg",
+        2 => return "assets/music/3.ogg",
+        3 => return "assets/music/5.ogg",
+        4 => return "assets/music/9.ogg",
+        5 => return "assets/music/11.ogg",
+        7 => return "assets/music/12.ogg",
+        _=> return "assets/music/2.ogg",
     }
 }
 fn random_image()->String {
@@ -183,21 +180,17 @@ items = { item="element/condition" }
         bg_music.play();
     }
     while app.wait() {
-        if elapsed > threshold {
-            elapsed = 0.0;
-        }
-        if busy {
-            //do stuff
-        }
         if let Some(button_action) = receive_action.recv() {
             match button_action {
                 Action::ToggleMusic => {
                     playing = !playing;
                     if playing {
                         bg_music.play();
+                        bg_music.set_looping(true);
                     } else {
                         bg_music.stop();
                     }
+                    continue
                 }
                 Action::Check => {
                   //TODO
@@ -279,10 +272,9 @@ items = { item="element/condition" }
                             ui.move_guage_0.set_label(special_name.to_string().as_str());
                         }
                     }
-                    ui.win.redraw();
                     ui.enemy_hp.set_value(enemy.hp);
                     if enemy.hp == 0.0 {
-                        player.xp += 100.0 - enemy.rate;
+                        player.xp += 100.0;// enemy.???
                         player.level_up();
                         
                         if enemy.items().len() > 0 {
@@ -310,6 +302,8 @@ items = { item="element/condition" }
                     }
                     current_move = 0;
                     ui.math.hide();
+                    ui.win.redraw();
+                    continue
                 },
                 Action::Move0 => {
                     current_move = 0;
@@ -341,6 +335,8 @@ items = { item="element/condition" }
                         ui.eq2_atk.set_value(atk);
                         ui.eq2_level.set_value(level);
                         ui.eq2_answer.set_value(0.0);
+                        ui.win.redraw();
+                        continue
                     }
                 },
                 Action::Move1 => {
@@ -373,6 +369,8 @@ items = { item="element/condition" }
                         ui.eq2_atk.set_value(atk);
                         ui.eq2_level.set_value(level);
                         ui.eq2_answer.set_value(0.0);
+                        ui.win.redraw();
+                        continue
                     }
                 },
                 Action::Move2 => {
@@ -405,6 +403,8 @@ items = { item="element/condition" }
                         ui.eq2_atk.set_value(atk);
                         ui.eq2_level.set_value(level);
                         ui.eq2_answer.set_value(0.0);
+                        ui.win.redraw();
+                        continue
                     }
                 },
                 Action::Move3 => {
@@ -437,6 +437,8 @@ items = { item="element/condition" }
                         ui.eq2_atk.set_value(atk);
                         ui.eq2_level.set_value(level);
                         ui.eq2_answer.set_value(0.0);
+                        ui.win.redraw();
+                        continue
                     }
                 },
                 Action::Fight => {
@@ -460,6 +462,8 @@ items = { item="element/condition" }
                         ui.move_guage_3.set_maximum(special.mp_total(0.0));
                         ui.move_guage_3.set_value(player.clone().get_mp(3));
                         ui.move_guage_3.set_label(special.to_string().as_str());
+                        ui.win.redraw();
+                        continue
                     }
                 },
                 Action::Item(item_screen) => {
@@ -477,13 +481,19 @@ items = { item="element/condition" }
                                 let v = item.to_string();
                                 ui.items.add(v.as_str());
                             }
+                            ui.win.redraw();
+                            continue
                         },
                         ItemScreen::Items(usage) => {
                             let item = ui.items.value() - 1;
                             if item < 0 {
+                                ui.item_screen.hide();
+                                ui.win.redraw();
                                 continue
                             }
                             match usage {
+                                ItemUsage::Give => {ui.item_screen.hide();},
+                                ItemUsage::Toss => {ui.item_screen.hide();},
                                 ItemUsage::Use => {
                                     player.use_item(item as u32);
                                     //
@@ -511,16 +521,26 @@ items = { item="element/condition" }
                                     ui.move_guage_3.set_maximum(special.mp_total(0.0));
                                     ui.move_guage_3.set_value(player.clone().get_mp(3));
                                     ui.move_guage_3.set_label(special.to_string().as_str());
+                                    ui.win.redraw();
+                                    continue
                                 },
-                                ItemUsage::Give => {ui.item_screen.hide();},
-                                ItemUsage::Toss => {ui.item_screen.hide();},
                             }
                         },
                         ItemScreen::Herbs(usage) => {
-                            ui.item_screen.hide();
+                            let item = ui.herbs.value() - 1;
+                            if item < 0 {
+                                ui.item_screen.hide();
+                                ui.win.redraw();
+                                continue
+                            }
                         },
                         ItemScreen::Relics(usage) => {
-                            ui.item_screen.hide();
+                            let item = ui.relics.value() - 1;
+                            if item < 0 {
+                                ui.item_screen.hide();
+                                ui.win.redraw();
+                                continue
+                            }
                         },
                     }
                     
@@ -541,10 +561,13 @@ items = { item="element/condition" }
                             ui.hp_creature_0.set_maximum(c.hp_max);
                             ui.xp_creature_0.set_value(c.level);
                             ui.xp_creature_0.set_maximum(100.0);
+                            ui.win.redraw();
+                            continue
                             
                             
                         },
                         SwitchScreen::Choose(num) => {
+                            ui.switch_screen.hide();
                             if num < creatures.len() {
                                 player = creatures[num].clone();
                                 // TODO LOAD
@@ -560,12 +583,15 @@ items = { item="element/condition" }
                                 bg_music.stop();
                                 bg_music = Music::new(song).unwrap();
                                 bg_music.play();
+                                bg_music.set_looping(true);
                             }
-                            ui.switch_screen.hide();
+                            ui.win.redraw();
+                            continue
                         },
                         SwitchScreen::Stats(num) => {
+                            ui.switch_screen.hide();
                             println!("num={}",num);
-                            if num <= creatures.len() {
+                            if num < creatures.len() {
                                 ui.stats_screen.show();
                                 let c = creatures[num].clone();
                                 ui.stat_viewer.begin();
@@ -573,7 +599,8 @@ items = { item="element/condition" }
                                 ui.stat_viewer.end();
                                 ui.stats_image.set_image(get_image(creatures[num].clone(), View::Right));
                             }
-                            ui.switch_screen.hide();
+                            ui.win.redraw();
+                            continue
                         },
                         SwitchScreen::Item(num) => {
                             ui.switch_screen.hide();
@@ -584,9 +611,11 @@ items = { item="element/condition" }
                                 bg_music.stop();
                                 bg_music = Music::new(song).unwrap();
                                 bg_music.play();
+                                bg_music.set_looping(true);
                             }
                             ui.stats_screen.hide();
                             ui.win.redraw();
+                            continue
                         },
                     }
                     
@@ -597,6 +626,7 @@ items = { item="element/condition" }
                         bg_music.stop();
                         bg_music = Music::new(song).unwrap();
                         bg_music.play();
+                        bg_music.set_looping(true);
                         enemy_iter += 1;
                     }
                     if enemy_iter >= enemies.len() {
@@ -609,11 +639,14 @@ items = { item="element/condition" }
                     ui.enemy_hp.set_maximum(enemy.hp_max);
                     ui.enemy_hp.set_value(enemy.hp);
                     ui.enemy.set_label(enemy.name.as_str());
+                    ui.win.redraw();
+                    continue
                 },
-                _=> {},
+                _=> {
+                    ui.win.redraw();
+                    continue
+                },
             }
         }
-        ui.win.redraw();
-        elapsed += 1.0;
     }
 }

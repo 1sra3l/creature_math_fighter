@@ -18,10 +18,9 @@ ez-pixmap = "0.2"
 rand = "0.8.4"
 ears = "0.8.0"
 rpg-stat = { git="https://github.com/1sra3l/rpg-stat.git", features=["fltkform"]}
-#fltk-form = "0.1"
-fltk-form = { git="https://github.com/1sra3l/fltk-form.git"}
-#fltk-form-derive = "0.1"
-fltk-form-derive = { git="https://github.com/1sra3l/fltk-form.git"}
+vectorview = { git="https://github.com/1sra3l/vectorview.git" }
+fltk-form = "0.1"
+fltk-form-derive = "0.1"
 serde = { version = "1.0.130", features = ["derive"] }
 toml = "0.5"
 
